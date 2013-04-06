@@ -20,7 +20,6 @@ endfunction
 
 
 function! s:outputter.finish(session)
-	echom "homu"
 	try
 		let errorformat = &g:errorformat
 		let &g:errorformat = self.config.errorformat
