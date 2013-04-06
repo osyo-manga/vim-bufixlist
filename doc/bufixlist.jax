@@ -1,0 +1,111 @@
+*bufixlist.txt*	バッファ単位で |quickfix| を設定するためのプラグインです。
+
+
+
+==============================================================================
+概要						*bufixlist-introduction*
+
+*bufixlist* はバッファ単位で |quickfix| のデータを保持するためのプラグインで
+す。
+のプラグインはバッファ内で |quickfix| のデータを保持し、バッファを切り換え
+るたびに |location-list| へと出力を行っています。
+その為、このプラグインを使用すると |location-list| は正しく動作しなくなるので
+注意して下さい。
+
+
+==============================================================================
+使い方						*bufixlist-usage*
+
+|quickfix| や |location-list| と同じような使い方になります。
+
+>
+    let s:qflist = [
+    \    {
+    \        'bufnr': 16,
+    \        'col': 0,
+    \        'lnum': 6,
+    \        'nr': 2065,
+    \        'pattern': '',
+    \        'text': '''m'' : 定義されていない識別子です。',
+    \        'type': 'e',
+    \        'valid': 1,
+    \        'vcol': 0
+    \    },
+    \    {
+    \        'bufnr': 16,
+    \        'col': 0,
+    \        'lnum': 8,
+    \        'nr': 2143,
+    \        'pattern': '',
+    \        'text': '構文エラー : '';'' が ''}'' の前にありません。',
+    \        'type': 'e',
+    \        'valid': 1,
+    \        'vcol': 0
+    \    }
+    \]
+
+    " 現在のバッファへと出力する
+    call bufixlist#set("%", s:qflist)
+
+    " quickfix(location-list) を開く
+    :Bopen
+
+
+
+    " watchdogs.vim の結果を bufixlist へ出力する設定
+    let g:quickrun_config = {
+    \   "watchdogs_checker/_" : {
+    \       "outputter" : "bufixlist",
+    \       "outputter/bufixlist/open_cmd" : "",
+    \   },
+    \}
+
+    " watchdogs.vim の設定を追加
+    call watchdogs#setup(g:quickrun_config)
+<
+
+
+==============================================================================
+インターフェース				*bufixlist-interface*
+
+------------------------------------------------------------------------------
+コマンド						*bufixlist-commands*
+
+:Bexpr {expr}						*:Bexpr*
+	|:cexpr| と同様です。内部では |:lexpr| が使用されます。
+
+:Bgetexpr {expr}					*:Bgetexpr*
+	|:cgetexpr| と同様です。内部では |:lgetexpr| が使用されます。
+
+:Bopen [height]						*:Bopen*
+	|:lopen| と同様です。
+
+:Bclose							*:Bclose*
+	|:lclose| と同様です。
+
+:Bwindow						*:Bwindow*
+	|:lwindow| と同様です。
+
+
+------------------------------------------------------------------------------
+関数							*bufixlist-functions*
+
+bufixlist#set({expr}, {qflist})				*bufixlist#set()*
+	バッファ{expr} に対して {qflist} が設定されます。
+	{expr} には |bufnr()| と同様の値が使用出来ます。
+	また、バッファがウィンドウに表示されている場合はロケーションリストへの
+	出力が行われます。
+
+	バッファ番号が無効な場合は -1 を返す。
+
+bufixlist#get({expr})					*bufixlist#get()*
+	バッファ{expr} に設定されている quickfix のデータを返します。
+	{expr} には |bufnr()| と同様の値が使用出来ます。
+
+bufixlist#redraw({expr})				*bufixlist#redraw()*
+	バッファ{expr} を現在のロケーションリストへと反映させます。
+	{expr} には |bufnr()| と同様の値が使用出来ます。
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
